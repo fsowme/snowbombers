@@ -4,7 +4,7 @@ import os
 from django.http import HttpResponse
 from dotenv import load_dotenv
 from rest_framework.parsers import JSONParser
-from telegram import Bot, BotCommand, Update, User
+from telegram import Bot, Update, User
 
 from .models import User
 
