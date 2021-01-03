@@ -3,6 +3,7 @@ import logging
 import os
 
 from django.http import HttpResponse
+from django.views.decorators.csrf import csrf_exempt
 from dotenv import load_dotenv
 from rest_framework.parsers import JSONParser
 from telegram import Bot, Update, User
@@ -40,8 +41,10 @@ def start(user_data):
     return created
 
 
+@csrf_exempt
 def webhook_updater(request):
     new_message = make_json(request_data=request)
+    bot.send_message(chat_id=CHAT_ID, text="Hello")
     if new_message["text"] == "/start":
         user_info = new_message["from"]
         if start(user_data=user_info):
