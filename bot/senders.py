@@ -10,13 +10,17 @@ def start(update, context):
     # )
 
 
+def button_1():
+    return "123"
+
+
 def myline(update, context):
     keyboard = [
         [
-            InlineKeyboardButton("Button 1", callback_data="1"),
-            InlineKeyboardButton("Button 2", callback_data="2"),
+            InlineKeyboardButton("Mayrhofen", callback_data=button_1()),
+            InlineKeyboardButton("Rosa Khutor", callback_data="2"),
         ],
-        [InlineKeyboardButton("Button 3", callback_data="3")],
+        [InlineKeyboardButton("Val Thorans", callback_data="3")],
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
     update.message.reply_text("Please choose:", reply_markup=reply_markup)
