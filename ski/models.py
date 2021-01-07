@@ -1,19 +1,22 @@
 from django.db import models
 
 
-class Country(models.Model):
-    name = models.CharField(max_length=200, unique=True, verbose_name="Страна")
-    visa = models.BooleanField(verbose_name="Требуется виза")
-    currency = models.CharField(max_length=30, verbose_name="Местная валюта")
+class Continent(models.Model):
+    name = models.CharField(
+        max_length=50, unique=True, verbose_name="Часть света"
+    )
 
     def __str__(self):
         return self.name
 
 
-class Region(models.Model):
-    name = models.CharField(max_length=200, unique=True, verbose_name="Регион")
-    country = models.ManyToManyField(
-        Country, related_name="regions", verbose_name="Страна региона"
+class Country(models.Model):
+    name = models.CharField(max_length=200, unique=True, verbose_name="Страна")
+    continent = models.ForeignKey(
+        Continent,
+        on_delete=models.PROTECT,
+        related_name="countries",
+        verbose_name="Часть света",
     )
 
     def __str__(self):
@@ -25,7 +28,11 @@ class Airport(models.Model):
         max_length=200, unique=True, verbose_name="Название аэропорта"
     )
     iata_code = models.CharField(
-        max_length=10, unique=True, verbose_name="Сокращеное имя по ИАТА"
+        max_length=10,
+        unique=True,
+        verbose_name="Сокращеное имя по ИАТА",
+        blank=True,
+        null=True,
     )
     country = models.ForeignKey(
         Country,
@@ -42,14 +49,6 @@ class Resort(models.Model):
     name = models.CharField(max_length=200, unique=True, verbose_name="Курорт")
     country = models.ManyToManyField(
         Country, related_name="resorts", verbose_name="Страна курорта"
-    )
-    region = models.ForeignKey(
-        Region,
-        on_delete=models.PROTECT,
-        related_name="resorts",
-        verbose_name="Регион",
-        blank=True,
-        null=True,
     )
     airport = models.ManyToManyField(
         Airport, related_name="resorts", verbose_name="Ближайшие аэропорты"
