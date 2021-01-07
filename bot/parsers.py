@@ -1,5 +1,3 @@
-from time import monotonic
-
 import requests
 from bs4 import BeautifulSoup
 
@@ -42,10 +40,10 @@ def resorts_by_country(country):
     return resorts
 
 
-start = monotonic()
+# start = monotonic()
 # print(get_countries())
-print(resorts_by_country("Италия"))
-print(monotonic() - start)
+# print(resorts_by_country("Италия"))
+# print(monotonic() - start)
 # def parse_resort_link(name):
 #     data = {"q": name, "limit": 150}
 #     response = requests.post(url=SEARCH_PATH, data=data)

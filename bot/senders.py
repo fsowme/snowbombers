@@ -1,5 +1,7 @@
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
+from bot import parsers
+
 
 def start(update, context):
     user_says = " ".join(context.args)
@@ -10,20 +12,19 @@ def start(update, context):
     # )
 
 
-def button_1():
-    return "123"
-
-
-def myline(update, context):
+def resort_info(update, context):
     keyboard = [
         [
-            InlineKeyboardButton("Mayrhofen", callback_data=button_1()),
-            InlineKeyboardButton("Rosa Khutor", callback_data="2"),
+            InlineKeyboardButton("Asia", callback_data="1"),
+            InlineKeyboardButton("Europe", callback_data="2"),
         ],
-        [InlineKeyboardButton("Val Thorans", callback_data="3")],
+        [
+            InlineKeyboardButton("North America", callback_data="3"),
+            InlineKeyboardButton("South America", callback_data="4"),
+        ],
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
-    update.message.reply_text("Please choose:", reply_markup=reply_markup)
+    update.message.reply_text(f"Please choose:", reply_markup=reply_markup)
 
 
 def button(update, context):

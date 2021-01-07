@@ -9,7 +9,7 @@ from telegram import Bot, Update
 from telegram.ext import CallbackQueryHandler, CommandHandler, Dispatcher
 
 from .models import User as django_user
-from .senders import button, myline, start
+from .senders import button, resort_info, start
 
 load_dotenv()
 
@@ -20,7 +20,7 @@ bot = Bot(token=TELEGRAM_TOKEN)
 
 dispatcher = Dispatcher(bot=bot, update_queue=None, workers=0)
 dispatcher.add_handler(CommandHandler("start", start))
-dispatcher.add_handler(CommandHandler("myline", myline))
+dispatcher.add_handler(CommandHandler("info", resort_info))
 dispatcher.add_handler(CallbackQueryHandler(button))
 
 
