@@ -28,11 +28,6 @@ dispatcher.add_handler(CommandHandler("info", resort_info))
 dispatcher.add_handler(CallbackQueryHandler(button))
 
 
-def index(request):
-    print(request.headers)
-    return HttpResponse("Bot index")
-
-
 def make_json(request_data):
     stream = io.BytesIO(request_data.body)
     update_object = JSONParser().parse(stream)
@@ -83,37 +78,15 @@ def parse_resorts(request):
         for country in Country.objects.all()
         if Resort.objects.filter(country=country).count() == 0
     ]
-    countries = [
-        "Denmark",
-        "Finland",
-        "Iceland",
-        "Slovakia",
-        "Switzerland",
-        "Canada",
-        "Japan",
-        "Kyrgyzstan",
-    ]
     shuffle(countries)
-    counter = 0
     for country in countries:
-        counter += 1
-        if counter % 5 == 0:
-            resorts = get_resorts_soup(country=country, is_change_ip=True)
-        resorts = get_resorts_soup(country=country)
-        print(country)
-        if not resorts:
-            print("Спалили на старом ip, пробую сменить")
-            sleep(33)
-            resorts = get_resorts_soup(country=country, is_change_ip=True)
-            if not resorts:
-                print("Не помогло")
+        resorts_soup = get_resorts_soup(country=country)
+        if not resorts_soup:
+            resorts_soup = get_resorts_soup(country=country, is_change_ip=True)
+            if not resorts_soup:
                 return HttpResponse(Resort.objects.all())
-            print("Вроде проканало")
-        sleep_time = randint(10, 100)
-        print(sleep_time)
-        sleep(sleep_time)
-
-        for resort_soup in resorts:
+        sleep(randint(10, 100))
+        for resort_soup in resorts_soup:
             resort_data = get_resort(resort_soup)
             if not resort_data:
                 break
@@ -136,19 +109,3 @@ def parse_resorts(request):
                 resort = Resort.objects.get(name=resort_data["name"])
             Country.objects.get(name=country).resorts.add(resort)
     return HttpResponse(Resort.objects.all())
-
-
-# @csrf_exempt
-# def webhook_updater(request):
-#     print(request.body)
-#     new_message = make_json(request_data=request)
-#     bot.send_message(chat_id=CHAT_ID, text="Hello")
-#     if new_message["text"] == "/start":
-#         user_info = new_message["from"]
-#         if check_user_start(user_data=user_info):
-#             bot.send_message(chat_id=CHAT_ID, text="You are registered")
-#         else:
-#             bot.send_message(
-#                 chat_id=CHAT_ID, text="You are already registered"
-#             )
-#     return HttpResponse("Ok")
