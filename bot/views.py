@@ -1,14 +1,18 @@
 import io
 import os
+from random import randint, shuffle
+from time import sleep
 
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from dotenv import load_dotenv
 from rest_framework.parsers import JSONParser, json
+from ski.models import Continent, Country, Resort, Slope
 from telegram import Bot, Update
 from telegram.ext import CallbackQueryHandler, CommandHandler, Dispatcher
 
 from .models import User as django_user
+from .parsers import get_regions, get_resort, get_resorts_soup
 from .senders import button, resort_info, start
 
 load_dotenv()
@@ -25,6 +29,7 @@ dispatcher.add_handler(CallbackQueryHandler(button))
 
 
 def index(request):
+    print(request.headers)
     return HttpResponse("Bot index")
 
 
@@ -51,6 +56,86 @@ def webhook_updater(request):
     update = Update.de_json(json.loads(request.body), bot)
     dispatcher.process_update(update)
     return HttpResponse("Ok")
+
+
+def parse_continents(request):
+    continents = get_regions()
+    for continent in continents:
+        Continent.objects.create(name=continent, url=continents[continent])
+    return HttpResponse(continents)
+
+
+def parse_countries(request):
+    continents = Continent.objects.all()
+    for continent in continents:
+        sleep(randint(5, 10))
+        countries = get_regions(region=continent.name)
+        for country in countries:
+            Country.objects.create(
+                name=country, continent=continent, url=countries[country]
+            )
+    return HttpResponse(Country.objects.all())
+
+
+def parse_resorts(request):
+    countries = [
+        country.name
+        for country in Country.objects.all()
+        if Resort.objects.filter(country=country).count() == 0
+    ]
+    countries = [
+        "Denmark",
+        "Finland",
+        "Iceland",
+        "Slovakia",
+        "Switzerland",
+        "Canada",
+        "Japan",
+        "Kyrgyzstan",
+    ]
+    shuffle(countries)
+    counter = 0
+    for country in countries:
+        counter += 1
+        if counter % 5 == 0:
+            resorts = get_resorts_soup(country=country, is_change_ip=True)
+        resorts = get_resorts_soup(country=country)
+        print(country)
+        if not resorts:
+            print("Спалили на старом ip, пробую сменить")
+            sleep(33)
+            resorts = get_resorts_soup(country=country, is_change_ip=True)
+            if not resorts:
+                print("Не помогло")
+                return HttpResponse(Resort.objects.all())
+            print("Вроде проканало")
+        sleep_time = randint(10, 100)
+        print(sleep_time)
+        sleep(sleep_time)
+
+        for resort_soup in resorts:
+            resort_data = get_resort(resort_soup)
+            if not resort_data:
+                break
+            if not Resort.objects.filter(name=resort_data["name"]):
+                resort = Resort.objects.create(
+                    name=resort_data["name"],
+                    bottom_point=int(float(resort_data["bottom_point"])),
+                    top_point=int(float(resort_data["top_point"])),
+                    url=resort_data["url"],
+                )
+                Slope.objects.create(
+                    resort=resort,
+                    blue_slopes=int(float(resort_data["blue_slopes_length"])),
+                    red_slopes=int(float(resort_data["red_slopes_length"])),
+                    black_slopes=int(
+                        float(resort_data["black_slopes_length"])
+                    ),
+                )
+            else:
+                resort = Resort.objects.get(name=resort_data["name"])
+            Country.objects.get(name=country).resorts.add(resort)
+    return HttpResponse(Resort.objects.all())
 
 
 # @csrf_exempt

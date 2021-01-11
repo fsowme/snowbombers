@@ -5,19 +5,21 @@ class Continent(models.Model):
     name = models.CharField(
         max_length=50, unique=True, verbose_name="Часть света"
     )
+    url = models.SlugField(unique=True, verbose_name="Continent url")
 
     def __str__(self):
         return self.name
 
 
 class Country(models.Model):
-    name = models.CharField(max_length=200, unique=True, verbose_name="Страна")
+    name = models.CharField(max_length=200, verbose_name="Страна")
     continent = models.ForeignKey(
         Continent,
         on_delete=models.PROTECT,
         related_name="countries",
         verbose_name="Часть света",
     )
+    url = models.SlugField(verbose_name="Country url")
 
     def __str__(self):
         return self.name
@@ -48,14 +50,22 @@ class Airport(models.Model):
 class Resort(models.Model):
     name = models.CharField(max_length=200, unique=True, verbose_name="Курорт")
     country = models.ManyToManyField(
-        Country, related_name="resorts", verbose_name="Страна курорта"
-    )
-    airport = models.ManyToManyField(
-        Airport, related_name="resorts", verbose_name="Ближайшие аэропорты"
+        Country, related_name="resorts", verbose_name="Сатраны"
     )
     skipass_price = models.PositiveSmallIntegerField(
-        verbose_name="Цена скипасса"
+        blank=True, null=True, verbose_name="Цена скипасса"
     )
+
+    bottom_point = models.PositiveSmallIntegerField(
+        blank=True, null=True, verbose_name="Нижняя точка"
+    )
+    top_point = models.PositiveSmallIntegerField(
+        blank=True, null=True, verbose_name="Верхняя точка"
+    )
+    url = models.SlugField(unique=True, verbose_name="Resort url")
+
+    def height_difference(self):
+        return self.top_point - self.bottom_point
 
     def __str__(self):
         return self.name
@@ -70,16 +80,16 @@ class Slope(models.Model):
     )
 
     green_slopes = models.PositiveSmallIntegerField(
-        verbose_name="Протяжённость зелёных трасс"
+        blank=True, null=True, verbose_name="Протяжённость зелёных трасс"
     )
     blue_slopes = models.PositiveSmallIntegerField(
-        verbose_name="Протяжённость синих трасс"
+        blank=True, null=True, verbose_name="Протяжённость синих трасс"
     )
     red_slopes = models.PositiveSmallIntegerField(
-        verbose_name="Протяжённость красных трасс"
+        blank=True, null=True, verbose_name="Протяжённость красных трасс"
     )
     black_slopes = models.PositiveSmallIntegerField(
-        verbose_name="Протяжённость чёрных трасс"
+        blank=True, null=True, verbose_name="Протяжённость чёрных трасс"
     )
 
     def all_slopes(self):
