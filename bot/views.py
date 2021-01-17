@@ -1,38 +1,15 @@
-import io
-import os
 from random import randint, shuffle
 from time import sleep
 
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
-from dotenv import load_dotenv
-from rest_framework.parsers import JSONParser, json
+from rest_framework.parsers import json
 from ski.models import Continent, Country, Resort, Slope
-from telegram import Bot, Update
-from telegram.ext import CallbackQueryHandler, CommandHandler, Dispatcher
+from telegram import Update
 
+from .handlers import BOT, DISPATCHER
 from .models import User as django_user
 from .parsers import get_regions, get_resort, get_resorts_soup
-from .senders import button, resort_info, start
-
-load_dotenv()
-
-TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
-CHAT_ID = os.getenv("CHAT_ID")
-
-bot = Bot(token=TELEGRAM_TOKEN)
-
-dispatcher = Dispatcher(bot=bot, update_queue=None, workers=0)
-dispatcher.add_handler(CommandHandler("start", start))
-dispatcher.add_handler(CommandHandler("info", resort_info))
-dispatcher.add_handler(CallbackQueryHandler(button))
-
-
-def make_json(request_data):
-    stream = io.BytesIO(request_data.body)
-    update_object = JSONParser().parse(stream)
-    update = Update(**update_object)
-    return dict(update.message)
 
 
 def check_user_start(user_data):
@@ -48,8 +25,8 @@ def check_user_start(user_data):
 
 @csrf_exempt
 def webhook_updater(request):
-    update = Update.de_json(json.loads(request.body), bot)
-    dispatcher.process_update(update)
+    update = Update.de_json(json.loads(request.body), BOT)
+    DISPATCHER.process_update(update)
     return HttpResponse("Ok")
 
 

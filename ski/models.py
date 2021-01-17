@@ -95,7 +95,7 @@ class Slope(models.Model):
     def all_slopes(self):
         return sum(
             [
-                self.green_slopes,
+                # self.green_slopes,
                 self.blue_slopes,
                 self.red_slopes,
                 self.black_slopes,
