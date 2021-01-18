@@ -37,13 +37,13 @@ def button(update, context):
             f"All: {all_slopes}\nTop: {top_point} m, "
             f"Height difference: {height_difference} m"
         )
-        return
+        print(update)
+        return update.callback_query.delete_message()
     keyboard = choose_buttons(update)
     query = update.callback_query
     query.answer()
     reply_markup = InlineKeyboardMarkup(keyboard)
-    query.edit_message_reply_markup(reply_markup=reply_markup)
-    # query.edit_message_text(text=f"{query.data} Hello")
+    return query.edit_message_reply_markup(reply_markup=reply_markup)
 
 
 def continents_buttons():
