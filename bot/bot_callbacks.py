@@ -53,7 +53,7 @@ def select_continents(update, context):
     update.message.reply_text("Please choose:", reply_markup=reply_markup)
 
 
-def select_countries(update, context):
-    keyboard = countries_buttons(update.callback_query.data)
-    reply_markup = InlineKeyboardMarkup(keyboard)
-    update.message.reply_text("Please choose:", reply_markup=reply_markup)
+# def select_countries(update, context):
+#     keyboard = countries_buttons(update.callback_query.data)
+#     reply_markup = InlineKeyboardMarkup(keyboard)
+#     update.message.reply_text("Please choose:", reply_markup=reply_markup)
