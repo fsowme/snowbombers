@@ -1,6 +1,7 @@
-from django.core.paginator import Paginator
 from ski.models import Continent, Country, Resort
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup
+from telegram import InlineKeyboardMarkup
+
+from .keyboards import continents_buttons, countries_buttons, resorts_buttons
 
 
 def start(update, context):
@@ -44,47 +45,6 @@ def button(update, context):
     query.answer()
     reply_markup = InlineKeyboardMarkup(keyboard)
     return query.edit_message_reply_markup(reply_markup=reply_markup)
-
-
-def continents_buttons():
-    paginator = Paginator(Continent.objects.all().order_by("name"), 2)
-    keyboard = []
-    for page in paginator:
-        keyboard.append(
-            [
-                InlineKeyboardButton(
-                    _.name,
-                    callback_data=_.name,
-                )
-                for _ in page
-            ]
-        )
-    return keyboard
-
-
-def countries_buttons(continent_name):
-    continent = Continent.objects.get(name=continent_name)
-    paginator = Paginator(
-        Country.objects.filter(continent=continent).order_by("name"), 3
-    )
-    keyboard = []
-    for page in paginator:
-        keyboard.append(
-            [InlineKeyboardButton(_.name, callback_data=_.name) for _ in page]
-        )
-    return keyboard
-
-
-def resorts_buttons(country_name):
-    paginator = Paginator(
-        Resort.objects.filter(country__name=country_name).order_by("name"), 3
-    )
-    keyboard = []
-    for page in paginator:
-        keyboard.append(
-            [InlineKeyboardButton(_.name, callback_data=_.name) for _ in page]
-        )
-    return keyboard
 
 
 def select_continents(update, context):
