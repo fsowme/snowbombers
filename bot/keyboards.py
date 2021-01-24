@@ -16,6 +16,7 @@ def continents_buttons():
                 for _ in page
             ]
         )
+    keyboard.append([InlineKeyboardButton("Quit", callback_data="cancel")])
     return keyboard
 
 
@@ -36,7 +37,8 @@ def countries_buttons(continent_name):
         [
             InlineKeyboardButton(
                 "Back to list of continents", callback_data="start_info:"
-            )
+            ),
+            InlineKeyboardButton("Quit", callback_data="cancel"),
         ]
     )
     return keyboard
@@ -60,7 +62,24 @@ def resorts_buttons(country_name):
             InlineKeyboardButton(
                 "Back to list of countries",
                 callback_data=f"continent:{continent}",
-            )
+            ),
+            InlineKeyboardButton("Quit", callback_data="cancel"),
         ]
     )
     return keyboard
+
+
+def get_resort_info(resort_name):
+    resort = Resort.objects.get(name=resort_name)
+    top_point = resort.top_point
+    height_difference = resort.height_difference()
+    blue = resort.slopes.blue_slopes
+    red = resort.slopes.red_slopes
+    black = resort.slopes.black_slopes
+    all_slopes = resort.slopes.all_slopes()
+    resort_info = (
+        f"{resort_name}\nRed: {red}, Blue: {blue}, Black: {black}, "
+        f"All: {all_slopes}\nTop: {top_point} m, "
+        f"Height difference: {height_difference} m"
+    )
+    return resort_info

@@ -1,7 +1,11 @@
-from ski.models import Continent, Country, Resort
 from telegram import InlineKeyboardMarkup
 
-from .keyboards import continents_buttons, countries_buttons, resorts_buttons
+from .keyboards import (
+    continents_buttons,
+    countries_buttons,
+    get_resort_info,
+    resorts_buttons,
+)
 
 
 def start(update, context):
@@ -20,45 +24,24 @@ def choose_buttons(next_step):
         return countries_buttons(land_name)
     if land_type == "country":
         return resorts_buttons(land_name)
-    raise ValueError("Unknown next step")
-
-
-def get_resort_info(resort_name):
-    resort = Resort.objects.get(name=resort_name)
-    top_point = resort.top_point
-    height_difference = resort.height_difference()
-    blue = resort.slopes.blue_slopes
-    red = resort.slopes.red_slopes
-    black = resort.slopes.black_slopes
-    all_slopes = resort.slopes.all_slopes()
-    resort_info = (
-        f"{resort_name}\nRed: {red}, Blue: {blue}, Black: {black}, "
-        f"All: {all_slopes}\nTop: {top_point} m, "
-        f"Height difference: {height_difference} m"
-    )
-    return resort_info
+    raise ValueError("Unknown type of next step")
 
 
 def button(update, context):
     query = update.callback_query
     query.answer()
-    land = query.data
-    if land.split(sep=":")[0] == "resort":
-        resort_name = land.split(sep=":")[1]
-        update.callback_query.message.reply_text(get_resort_info(resort_name))
+    command = query.data
+    if command == "cancel":
         return update.callback_query.delete_message()
-    keyboard = choose_buttons(land)
+    if command.split(sep=":")[0] == "resort":
+        resort_info = get_resort_info(command.split(sep=":")[1])
+        return update.callback_query.message.reply_text(resort_info)
+    keyboard = choose_buttons(command)
     reply_markup = InlineKeyboardMarkup(keyboard)
     return query.edit_message_reply_markup(reply_markup=reply_markup)
 
 
 def select_continents(update, context):
     keyboard = continents_buttons()
-    reply_markup = InlineKeyboardMarkup(keyboard)
-    update.message.reply_text("Please choose:", reply_markup=reply_markup)
-
-
-def select_countries(update, context):
-    keyboard = countries_buttons(update.callback_query.data)
     reply_markup = InlineKeyboardMarkup(keyboard)
     update.message.reply_text("Please choose:", reply_markup=reply_markup)
