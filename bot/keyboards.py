@@ -1,6 +1,6 @@
 from django.core.paginator import Paginator
 from ski.models import Continent, Country, Resort
-from telegram import InlineKeyboardButton
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
 
 def continents_buttons():
@@ -17,7 +17,7 @@ def continents_buttons():
             ]
         )
     keyboard.append([InlineKeyboardButton("Quit", callback_data="cancel")])
-    return keyboard
+    return InlineKeyboardMarkup(keyboard)
 
 
 def countries_buttons(continent_name):
@@ -41,7 +41,7 @@ def countries_buttons(continent_name):
             InlineKeyboardButton("Quit", callback_data="cancel"),
         ]
     )
-    return keyboard
+    return InlineKeyboardMarkup(keyboard)
 
 
 def resorts_buttons(country_name):
@@ -66,7 +66,7 @@ def resorts_buttons(country_name):
             InlineKeyboardButton("Quit", callback_data="cancel"),
         ]
     )
-    return keyboard
+    return InlineKeyboardMarkup(keyboard)
 
 
 def get_resort_info(resort_name):
@@ -83,3 +83,19 @@ def get_resort_info(resort_name):
         f"Height difference: {height_difference} m"
     )
     return resort_info
+
+
+def add_bookmarks_button(resort_name):
+    keyboard = [
+        [
+            InlineKeyboardButton(
+                "Add to bookmarks",
+                callback_data=f"add_bookmarks:{resort_name}",
+            )
+        ]
+    ]
+    return InlineKeyboardMarkup(keyboard)
+
+
+def resort_to_bookmarks(user_id, resort_id):
+    print(f"MAKE TABLE WITH BOOKMARKS. user:{user_id}, resort:{resort_id}")
