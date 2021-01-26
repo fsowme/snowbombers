@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import F
 
 
 class Continent(models.Model):
@@ -6,6 +7,9 @@ class Continent(models.Model):
         max_length=50, unique=True, verbose_name="Часть света"
     )
     url = models.SlugField(unique=True, verbose_name="Continent url")
+
+    class Meta:
+        ordering = ["name"]
 
     def __str__(self):
         return self.name
@@ -20,6 +24,9 @@ class Country(models.Model):
         verbose_name="Часть света",
     )
     url = models.SlugField(verbose_name="Country url")
+
+    class Meta:
+        ordering = ["name"]
 
     def __str__(self):
         return self.name
@@ -43,6 +50,9 @@ class Airport(models.Model):
         verbose_name="Страна аэропорта",
     )
 
+    class Meta:
+        ordering = ["name"]
+
     def __str__(self):
         return self.name
 
@@ -63,6 +73,13 @@ class Resort(models.Model):
         blank=True, null=True, verbose_name="Верхняя точка"
     )
     url = models.SlugField(unique=True, verbose_name="Resort url")
+
+    class Meta:
+        ordering = [
+            -F("slopes__blue_slopes")
+            - F("slopes__red_slopes")
+            - F("slopes__black_slopes")
+        ]
 
     def height_difference(self):
         return self.top_point - self.bottom_point
@@ -92,6 +109,10 @@ class Slope(models.Model):
         blank=True, null=True, verbose_name="Протяжённость чёрных трасс"
     )
 
+    class Meta:
+        ordering = [-F("blue_slopes") - F("red_slopes") - F("black_slopes")]
+
+    @property
     def all_slopes(self):
         return sum(
             [

@@ -8,19 +8,7 @@ from ski.models import Continent, Country, Resort, Slope
 from telegram import Update
 
 from .handlers import BOT, DISPATCHER
-from .models import User as django_user
 from .parsers import get_regions, get_resort, get_resorts_soup
-
-
-def check_user_start(user_data):
-    user_id = int(user_data["id"])
-    first_name = user_data["first_name"]
-    is_bot = user_data["is_bot"]
-    _, created = django_user.objects.get_or_create(
-        telegram_id=user_id,
-        defaults={"first_name": first_name, "is_bot": is_bot},
-    )
-    return created
 
 
 @csrf_exempt

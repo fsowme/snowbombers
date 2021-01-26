@@ -2,6 +2,8 @@ from django.core.paginator import Paginator
 from ski.models import Continent, Country, Resort
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
+from .models import User as django_user
+
 
 def continents_buttons():
     paginator = Paginator(Continent.objects.all().order_by("name"), 2)
@@ -76,7 +78,7 @@ def get_resort_info(resort_name):
     blue = resort.slopes.blue_slopes
     red = resort.slopes.red_slopes
     black = resort.slopes.black_slopes
-    all_slopes = resort.slopes.all_slopes()
+    all_slopes = resort.slopes.all_slopes
     resort_info = (
         f"{resort_name}\nRed: {red}, Blue: {blue}, Black: {black}, "
         f"All: {all_slopes}\nTop: {top_point} m, "
@@ -85,7 +87,7 @@ def get_resort_info(resort_name):
     return resort_info
 
 
-def add_bookmarks_button(resort_name):
+def add_bookmarks_button(resort_name, user_id=None):
     keyboard = [
         [
             InlineKeyboardButton(
@@ -97,5 +99,37 @@ def add_bookmarks_button(resort_name):
     return InlineKeyboardMarkup(keyboard)
 
 
-def resort_to_bookmarks(user_id, resort_id):
-    print(f"MAKE TABLE WITH BOOKMARKS. user:{user_id}, resort:{resort_id}")
+def resort_to_bookmarks(user_id, resort_name):
+    user = django_user.objects.get(telegram_id=user_id)
+    resort = Resort.objects.get(name=resort_name)
+    return user.bookmarks.add(resort)
+
+
+def check_user_start(user_data):
+    _, created = django_user.objects.get_or_create(
+        telegram_id=user_data.id,
+        defaults={
+            "first_name": user_data.first_name,
+            "is_bot": user_data.is_bot,
+        },
+    )
+    return created
+
+
+def resorts_in_bookmarks(user_id):
+    user = django_user.objects.get(telegram_id=user_id)
+    paginator = Paginator(user.bookmarks.all(), 3)
+    keyboard = []
+    for page in paginator:
+        keyboard.append(
+            [
+                InlineKeyboardButton(_.name, callback_data=f"resort:{_.name}")
+                for _ in page
+            ]
+        )
+    keyboard.append(
+        [
+            InlineKeyboardButton("Quit", callback_data="cancel"),
+        ]
+    )
+    return InlineKeyboardMarkup(keyboard)

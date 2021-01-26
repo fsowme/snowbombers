@@ -1,25 +1,37 @@
 from .keyboards import (
     add_bookmarks_button,
+    check_user_start,
     continents_buttons,
     countries_buttons,
     get_resort_info,
     resort_to_bookmarks,
     resorts_buttons,
+    resorts_in_bookmarks,
 )
 
 
 def available_commands(update, context):
-    answer = "/start - start to conversation\n/info - search resort by regions"
+    answer = (
+        "/start - start to conversation\n/info - search resort by regions\n "
+        "/bookmarks - manage your bookmarks"
+    )
     return update.message.reply_text(answer)
 
 
 def start(update, context):
-    username = update.message.chat.first_name
+    username = update.message.from_user.first_name
+    check_user_start(user_data=update.message.from_user)
     update.message.reply_text(f"Hello {username}!")
     context.bot.send_message(
         chat_id=update.effective_chat.id, text="I'm a bot, please talk to me!"
     )
     return available_commands(update, context)
+
+
+def manage_bookmarks(update, context):
+    user_id = update.message.from_user.id
+    reply_markup = resorts_in_bookmarks(user_id=user_id)
+    update.message.reply_text("Please choose:", reply_markup=reply_markup)
 
 
 def choose_buttons(next_step):
@@ -41,7 +53,7 @@ def manage_callback(update, context):
         # 128609524
         user_id = query.message.chat.id
         resort_name = command.split(sep=":")[1]
-        return resort_to_bookmarks(user_id=user_id, resort_id=resort_name)
+        return resort_to_bookmarks(user_id=user_id, resort_name=resort_name)
     if command == "cancel":
         return update.callback_query.delete_message()
     if command.split(sep=":")[0] == "resort":
