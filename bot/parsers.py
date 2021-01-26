@@ -93,7 +93,7 @@ def get_resort(resort_soup):
     print("******************************************************")
     print(name)
     url = resort_soup.find("a", class_="h3").get("href")
-    if len(resort_soup.find_all("td")) < 9:
+    if len(resort_soup.find_all("td")) < 8:
         return False
 
     height_difference, bottom_point, top_point = [

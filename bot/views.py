@@ -55,6 +55,7 @@ def parse_resorts(request):
         for country in Country.objects.all()
         if Resort.objects.filter(country=country).count() == 0
     ]
+    countries = ["Austria", "France", "Italy", "Switzerland", "Russia", "USA"]
     shuffle(countries)
     for country in countries:
         resorts_soup = get_resorts_soup(country=country)
