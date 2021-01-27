@@ -1,9 +1,10 @@
-# __pycache__/
+__pycache__/
+static/
 media/
 # migrations/
-static/
-venv/
+venv
 .env
 # db.sqlite3
 snowbombers/settings.py
 debug.log
+manual_installed_app.txt
