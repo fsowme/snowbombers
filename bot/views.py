@@ -1,11 +1,12 @@
+import json
 from random import randint, shuffle
 from time import sleep
 
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
-from rest_framework.parsers import json
-from ski.models import Continent, Country, Resort, Slope
 from telegram import Update
+
+from ski.models import Continent, Country, Resort, Slope
 
 from .handlers import BOT, DISPATCHER
 from .parsers import get_regions, get_resort, get_resorts_soup

@@ -1,6 +1,7 @@
 from django.core.paginator import Paginator
-from ski.models import Continent, Country, Resort
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
+
+from ski.models import Continent, Country, Resort
 
 from .models import User as django_user
 
