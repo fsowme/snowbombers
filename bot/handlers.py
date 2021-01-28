@@ -1,4 +1,5 @@
 import os
+import re
 
 from dotenv import load_dotenv
 from telegram import Bot
@@ -12,6 +13,7 @@ from telegram.ext import (
 
 from .bot_callbacks import (
     available_commands,
+    cancel,
     manage_bookmarks,
     manage_callback,
     select_continents,
@@ -27,5 +29,9 @@ DISPATCHER = Dispatcher(bot=BOT, update_queue=None, workers=0)
 DISPATCHER.add_handler(CommandHandler("start", start))
 DISPATCHER.add_handler(CommandHandler("info", select_continents))
 DISPATCHER.add_handler(CommandHandler("bookmarks", manage_bookmarks))
-DISPATCHER.add_handler(CallbackQueryHandler(manage_callback))
+DISPATCHER.add_handler(
+    CallbackQueryHandler(manage_callback, pattern="^bookmarks")
+)
+DISPATCHER.add_handler(CallbackQueryHandler(cancel, pattern="^cancel$"))
+DISPATCHER.add_handler(CallbackQueryHandler(manage_callback, pattern="^info"))
 DISPATCHER.add_handler(MessageHandler(Filters.all, available_commands))

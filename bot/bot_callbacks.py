@@ -3,6 +3,7 @@ from .keyboards import (
     check_user_start,
     continents_buttons,
     countries_buttons,
+    del_resort_from_bookmarks,
     get_resort_info,
     resort_to_bookmarks,
     resorts_buttons,
@@ -37,38 +38,49 @@ def manage_bookmarks(update, context):
 
 def choose_buttons(next_step):
     land_type, land_name = next_step.split(sep=":")
-    if land_type == "start_info":
+    if land_type == "info_start":
         return continents_buttons()
-    if land_type == "continent":
+    if land_type == "info_continent":
         return countries_buttons(land_name)
-    if land_type == "country":
+    if land_type == "info_country":
         return resorts_buttons(land_name)
     raise ValueError("Unknown type of next step")
-
-
-def manage_callback_info(update, context):
-    pass
 
 
 def manage_callback(update, context):
     query = update.callback_query
     query.answer()
     command = query.data
-    if command.split(sep=":")[0] == "add_bookmarks":
-        # 128609524
-        user_id = query.message.chat.id
+    user_id = query.message.chat.id
+
+    if command.split(sep=":")[0] == "bookmarks_add":
         resort_name = command.split(sep=":")[1]
-        return resort_to_bookmarks(user_id=user_id, resort_name=resort_name)
-    if command == "cancel":
-        return update.callback_query.delete_message()
-    if command.split(sep=":")[0] == "resort":
+        resort_to_bookmarks(user_id=user_id, resort_name=resort_name)
+        command = f"info_resort:{resort_name}"
+        return query.edit_message_reply_markup(
+            reply_markup=add_bookmarks_button(resort_name, user_id)
+        )
+    if command.split(sep=":")[0] == "bookmarks_del":
         resort_name = command.split(sep=":")[1]
-        resort_info = get_resort_info(resort_name)
-        return update.callback_query.message.reply_text(
-            resort_info, reply_markup=add_bookmarks_button(resort_name)
+        del_resort_from_bookmarks(user_id=user_id, resort_name=resort_name)
+        return query.edit_message_reply_markup(
+            reply_markup=add_bookmarks_button(resort_name, user_id)
+        )
+
+    if command.split(sep=":")[0] == "info_resort":
+        uuid = command.split(sep=":")[1]
+        resort_info = get_resort_info(uuid)
+        return query.message.reply_text(
+            resort_info,
+            reply_markup=add_bookmarks_button(uuid, user_id),
         )
     reply_markup = choose_buttons(command)
     return query.edit_message_reply_markup(reply_markup=reply_markup)
+
+
+def cancel(update, context):
+    update.callback_query.answer()
+    return update.callback_query.delete_message()
 
 
 def select_continents(update, context):

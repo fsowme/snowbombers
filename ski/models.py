@@ -62,7 +62,7 @@ class Airport(models.Model):
 
 class Resort(models.Model):
     name = models.CharField(max_length=200, unique=True, verbose_name="Курорт")
-    unique_name = models.UUIDField(
+    uuid = models.UUIDField(
         default=uuid.uuid4,
         editable=False,
         unique=True,
