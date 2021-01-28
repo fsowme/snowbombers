@@ -12,7 +12,8 @@ from .keyboards import (
 
 def available_commands(update, context):
     answer = (
-        "/start - start to conversation\n/info - search resort by regions\n "
+        "/start - start to conversation\n "
+        "/info - search resort by regions\n "
         "/bookmarks - manage your bookmarks"
     )
     return update.message.reply_text(answer)
@@ -43,6 +44,10 @@ def choose_buttons(next_step):
     if land_type == "country":
         return resorts_buttons(land_name)
     raise ValueError("Unknown type of next step")
+
+
+def manage_callback_info(update, context):
+    pass
 
 
 def manage_callback(update, context):

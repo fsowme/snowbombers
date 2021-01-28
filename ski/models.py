@@ -1,3 +1,6 @@
+import uuid
+from uuid import uuid4
+
 from django.db import models
 from django.db.models import F
 
@@ -59,6 +62,12 @@ class Airport(models.Model):
 
 class Resort(models.Model):
     name = models.CharField(max_length=200, unique=True, verbose_name="Курорт")
+    unique_name = models.UUIDField(
+        default=uuid.uuid4,
+        editable=False,
+        unique=True,
+        verbose_name="Уникальное имя (32 бита)",
+    )
     country = models.ManyToManyField(
         Country, related_name="resorts", verbose_name="Сатраны"
     )
