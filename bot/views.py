@@ -52,7 +52,7 @@ def parse_resorts(request):
             resorts_soup = get_resorts_soup(country=country, is_change_ip=True)
             if not resorts_soup:
                 return HttpResponse(Resort.objects.all())
-        sleep(randint(10, 100))
+        sleep(randint(5, 10))
         for resort_soup in resorts_soup:
             resort_data = get_resort(resort_soup)
             if not resort_data:

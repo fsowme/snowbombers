@@ -5,6 +5,10 @@ from django.db import models
 from django.db.models import F
 
 
+def short_uuid():
+    return uuid4().hex[:16]
+
+
 class Continent(models.Model):
     name = models.CharField(
         max_length=50, unique=True, verbose_name="Часть света"
@@ -62,11 +66,12 @@ class Airport(models.Model):
 
 class Resort(models.Model):
     name = models.CharField(max_length=200, unique=True, verbose_name="Курорт")
-    uuid = models.UUIDField(
-        default=uuid.uuid4,
+    uuid = models.CharField(
+        default=short_uuid,
         editable=False,
         unique=True,
-        verbose_name="Уникальное имя (32 бита)",
+        max_length=16,
+        verbose_name="Уникальное имя (16 бит)",
     )
     country = models.ManyToManyField(
         Country, related_name="resorts", verbose_name="Сатраны"
