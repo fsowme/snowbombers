@@ -1,4 +1,7 @@
+from ski.models import Continent, Country, Resort
+
 from .keyboards import (
+    MyKeyboardMarkup,
     add_bookmarks_button,
     check_user_start,
     continents_buttons,
@@ -48,6 +51,7 @@ def choose_buttons(next_step):
 
 
 def manage_callback(update, context):
+    # print(update)
     query = update.callback_query
     query.answer()
     command = query.data
@@ -71,8 +75,7 @@ def manage_callback(update, context):
         uuid = command.split(sep=":")[1]
         resort_info = get_resort_info(uuid)
         return query.message.reply_text(
-            resort_info,
-            reply_markup=add_bookmarks_button(uuid, user_id),
+            resort_info, reply_markup=add_bookmarks_button(uuid, user_id)
         )
     reply_markup = choose_buttons(command)
     return query.edit_message_reply_markup(reply_markup=reply_markup)
@@ -83,6 +86,43 @@ def cancel(update, context):
     return update.callback_query.delete_message()
 
 
-def select_continents(update, context):
-    reply_markup = continents_buttons()
-    update.message.reply_text("Please choose:", reply_markup=reply_markup)
+def manage_info_conversation(update, context):
+    if update.message and update.message.text == "/info":
+        queryset = Continent.objects.all()
+        markup = MyKeyboardMarkup.de_queryset(queryet=queryset, path="info:continent")
+        markup.create_button(text="Quit", button_data="cancel")
+        return update.message.reply_text(text="Please choose:", reply_markup=markup)
+    query = update.callback_query
+    command, parent, parent_uuid = query.data.split(sep=":")
+    print(f"{command}_{parent}_{parent_uuid}")
+
+    if parent == "start":
+        queryset = Continent.objects.all()
+        markup = MyKeyboardMarkup.de_queryset(queryet=queryset, path="info:continent")
+        markup.create_button(text="Quit", button_data="cancel")
+        query.answer()
+        return query.edit_message_reply_markup(reply_markup=markup)
+    if parent == "continent":
+        queryset = Country.objects.filter(continent__uuid=parent_uuid)
+        markup = MyKeyboardMarkup.de_queryset(queryet=queryset, path="info:country")
+        markup.create_button(text="Quit", button_data="cancel")
+        markup.create_button(text="Back to continents", button_data="info:start:")
+        query.answer()
+        return query.edit_message_reply_markup(reply_markup=markup)
+    if parent == "country":
+        queryset = Resort.objects.filter(country__uuid=parent_uuid)
+        back_uuid = Continent.objects.get(countries__uuid=parent_uuid).uuid
+        markup = MyKeyboardMarkup.de_queryset(queryet=queryset, path="info:resort")
+        markup.create_button(text="Quit", button_data="cancel")
+        markup.create_button(
+            text="Back to countries", button_data=f"info:continent:{back_uuid}"
+        )
+        query.answer()
+        return query.edit_message_reply_markup(reply_markup=markup)
+    if parent == "resort":
+        user_id = query.message.chat.id
+        answer = get_resort_info(uuid=parent_uuid)
+        query.answer()
+        return query.message.reply_text(
+            answer, reply_markup=add_bookmarks_button(parent_uuid, user_id)
+        )

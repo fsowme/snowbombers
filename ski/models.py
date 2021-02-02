@@ -3,17 +3,28 @@ from uuid import uuid4
 
 from django.db import models
 from django.db.models import F
+from django.db.models.fields import UUIDField
 
 
 def short_uuid():
-    return uuid4().hex[:16]
+    uuid = uuid4().hex[:16]
+    return uuid
 
 
 class Continent(models.Model):
     name = models.CharField(
         max_length=50, unique=True, verbose_name="Часть света"
     )
-    url = models.SlugField(unique=True, verbose_name="Continent url")
+    uuid = models.CharField(
+        default=short_uuid,
+        editable=False,
+        unique=True,
+        max_length=16,
+        verbose_name="Уникальное имя (16 бит)",
+    )
+    url = models.SlugField(
+        unique=True, max_length=250, verbose_name="Continent url"
+    )
 
     class Meta:
         ordering = ["name"]
@@ -24,13 +35,20 @@ class Continent(models.Model):
 
 class Country(models.Model):
     name = models.CharField(max_length=200, verbose_name="Страна")
+    uuid = models.CharField(
+        default=short_uuid,
+        editable=False,
+        unique=True,
+        max_length=16,
+        verbose_name="Уникальное имя (16 бит)",
+    )
     continent = models.ForeignKey(
         Continent,
         on_delete=models.PROTECT,
         related_name="countries",
         verbose_name="Часть света",
     )
-    url = models.SlugField(verbose_name="Country url")
+    url = models.SlugField(max_length=250, verbose_name="Country url")
 
     class Meta:
         ordering = ["name"]
@@ -86,7 +104,9 @@ class Resort(models.Model):
     top_point = models.PositiveSmallIntegerField(
         blank=True, null=True, verbose_name="Верхняя точка"
     )
-    url = models.SlugField(unique=True, verbose_name="Resort url")
+    url = models.SlugField(
+        unique=True, max_length=250, verbose_name="Resort url"
+    )
 
     class Meta:
         ordering = [

@@ -6,6 +6,52 @@ from ski.models import Continent, Country, Resort
 from .models import User as django_user
 
 
+class MyKeyboardMarkup(InlineKeyboardMarkup):
+    @classmethod
+    def de_queryset(cls, queryet, path, columns=3, keyboard=None):
+        newkeyboard = []
+        if keyboard:
+            newkeyboard.extend(keyboard)
+        paginator = Paginator(queryet, columns)
+        for page in paginator:
+            newkeyboard.append(
+                [
+                    InlineKeyboardButton(
+                        _.name, callback_data=f"{path}:{_.uuid}"
+                    )
+                    for _ in page
+                ]
+            )
+        return cls(newkeyboard)
+
+    def create_button(self, text, button_data, in_lust_row=False):
+        if in_lust_row and len(self.inline_keyboard) != 0:
+            self.inline_keyboard[-1].append(
+                InlineKeyboardButton(text, callback_data=button_data)
+            )
+        else:
+            self.inline_keyboard.append(
+                [InlineKeyboardButton(text, callback_data=button_data)]
+            )
+
+    def add_button(self, button, in_lust_row=False):
+        if in_lust_row and len(self.inline_keyboard) != 0:
+            self.inline_keyboard[-1].append(button)
+        else:
+            self.inline_keyboard.append(button)
+
+
+# keyboard.append(
+#         [
+#             InlineKeyboardButton(
+#                 "Back to list of countries",
+#                 callback_data=f"info_continent:{continent_name}",
+#             ),
+#             InlineKeyboardButton("Quit", callback_data="cancel"),
+#         ]
+#     )
+
+
 def continents_buttons():
     paginator = Paginator(Continent.objects.all().order_by("name"), 2)
     keyboard = []
@@ -112,14 +158,12 @@ def add_bookmarks_button(resort_name, user_id=None):
 
 
 def resort_to_bookmarks(user_id, resort_name):
-    print("add")
     user = django_user.objects.get(telegram_id=user_id)
     resort = Resort.objects.get(uuid=resort_name)
     return user.bookmarks.add(resort)
 
 
 def del_resort_from_bookmarks(user_id, resort_name):
-    print("del")
     user = django_user.objects.get(telegram_id=user_id)
     resort = Resort.objects.get(uuid=resort_name)
     return user.bookmarks.remove(resort)
