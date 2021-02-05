@@ -3,8 +3,9 @@ static/
 media/
 .vscode
 venv
-.env
+*.env
 db.sqlite3
 snowbombers/settings.py
-debug.log
-manual_installed_app.txt
+docker/nginx/*
+!docker/nginx/nginx.conf
+dump.json

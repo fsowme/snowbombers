@@ -1,0 +1,17 @@
+Django
+python_telegram_bot
+python-dotenv 
+beautifulsoup4
+lxml
+html5lib
+requests
+stem
+gunicorn
+psycopg2-binary
+PySocks
+
+
+
+
+
+djangorestframework

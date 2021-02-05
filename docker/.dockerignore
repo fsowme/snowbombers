@@ -1,0 +1,7 @@
+__pycache__/
+.vscode
+venv
+*.env
+db.sqlite3
+.git*
+docker/nginx/ssl/*

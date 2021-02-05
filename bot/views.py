@@ -12,6 +12,10 @@ from .handlers import BOT, DISPATCHER
 from .parsers import get_regions, get_resort, get_resorts_soup
 
 
+def test(request):
+    return HttpResponse("Test page")
+
+
 @csrf_exempt
 def webhook_updater(request):
     update = Update.de_json(json.loads(request.body), BOT)
@@ -68,9 +72,7 @@ def parse_resorts(request):
                     resort=resort,
                     blue_slopes=int(float(resort_data["blue_slopes_length"])),
                     red_slopes=int(float(resort_data["red_slopes_length"])),
-                    black_slopes=int(
-                        float(resort_data["black_slopes_length"])
-                    ),
+                    black_slopes=int(float(resort_data["black_slopes_length"])),
                 )
             else:
                 resort = Resort.objects.get(name=resort_data["name"])
