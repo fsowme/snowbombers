@@ -1,8 +1,7 @@
 import os
-import re
 from pathlib import Path
 
-from dotenv import find_dotenv, load_dotenv
+from dotenv import load_dotenv
 from telegram import Bot
 from telegram.ext import (
     CallbackQueryHandler,
@@ -14,9 +13,8 @@ from telegram.ext import (
 
 from .bot_callbacks import (
     available_commands,
+    bookmarks,
     cancel,
-    manage_bookmarks,
-    manage_callback,
     manage_info_conversation,
     start,
 )
@@ -32,8 +30,8 @@ DISPATCHER.add_handler(CommandHandler("start", start))
 DISPATCHER.add_handler(CommandHandler("info", manage_info_conversation))
 DISPATCHER.add_handler(CallbackQueryHandler(manage_info_conversation, pattern="^info"))
 
-DISPATCHER.add_handler(CommandHandler("bookmarks", manage_bookmarks))
-DISPATCHER.add_handler(CallbackQueryHandler(manage_callback, pattern="^bookmarks"))
+DISPATCHER.add_handler(CommandHandler("bookmarks", bookmarks))
+DISPATCHER.add_handler(CallbackQueryHandler(bookmarks, pattern="^bookmarks"))
 
 DISPATCHER.add_handler(CallbackQueryHandler(cancel, pattern="^cancel$"))
 DISPATCHER.add_handler(MessageHandler(Filters.all, available_commands))

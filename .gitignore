@@ -9,3 +9,4 @@ snowbombers/settings.py
 docker/nginx/*
 !docker/nginx/nginx.conf
 dump.json
+local_docker/
