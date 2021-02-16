@@ -1,3 +1,6 @@
+from typing import List
+
+from django.core import paginator
 from django.core.paginator import Paginator
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
@@ -16,7 +19,7 @@ class MyKeyboardMarkup(InlineKeyboardMarkup):
         for page in paginator:
             newkeyboard.append(
                 [
-                    InlineKeyboardButton(_.name, callback_data=f"{path}:{_.uuid}")
+                    InlineKeyboardButton(_.name, callback_data=f"{path}{_.uuid}")
                     for _ in page
                 ]
             )
@@ -32,9 +35,9 @@ class MyKeyboardMarkup(InlineKeyboardMarkup):
                 [InlineKeyboardButton(text, callback_data=button_data)]
             )
 
-    def add_button(self, button, in_lust_row=False):
+    def add_button(self, button: List[InlineKeyboardButton], in_lust_row=False):
         if in_lust_row and len(self.inline_keyboard) != 0:
-            self.inline_keyboard[-1].append(button)
+            self.inline_keyboard[-1].extend(button)
         else:
             self.inline_keyboard.append(button)
 
@@ -72,3 +75,24 @@ def button_add_bookmarks(resort_name, user_id=None):
         ]
     ]
     return InlineKeyboardMarkup(keyboard)
+
+
+def markup_start_search(apply_button=None):
+    markup = MyKeyboardMarkup.from_button(
+        InlineKeyboardButton(text=" By name", callback_data="search:name:")
+    )
+    markup.create_button(text="By region", button_data="search:region:start")
+    markup.create_button(
+        text="By height difference",
+        button_data="search:height_difference:",
+        in_lust_row=True,
+    )
+    markup.create_button(text="By top point", button_data="search:top_point:")
+    markup.create_button(
+        text="By length all slopes",
+        button_data="search:length_all_slopes:",
+        in_lust_row=True,
+    )
+    if apply_button:
+        markup.add_button(apply_button)
+    return markup
