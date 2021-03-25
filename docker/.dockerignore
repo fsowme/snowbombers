@@ -3,5 +3,8 @@ __pycache__/
 venv
 *.env
 db.sqlite3
+snowbombers/settings.py
+docker/*
+!docker/settings.py
 .git*
-docker/nginx/ssl/*
+local_docker/
