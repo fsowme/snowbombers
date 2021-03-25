@@ -45,9 +45,9 @@ def get_region_json(url=None):
     page = get_page(url=url)
     soup = BeautifulSoup(page.text, features="html5lib")
     scripts = soup.find_all("script")
-    regions = [
-        script.text for script in scripts if "var regions" in script.text
-    ][0].strip()
+    regions = [script.text for script in scripts if "var regions" in script.text][
+        0
+    ].strip()
     regions = json.loads(regions[regions.find("{") : regions.rfind("}") + 1])
     return regions["childs"]
 
@@ -57,8 +57,7 @@ def get_regions(region=None):
     region_json = get_region_json(url=URL.format(REGIONS[region][1]))
     subregions = region_json[REGIONS[region][0]]["areas"]
     subregions = {
-        subregion["name"]: subregion["url"]
-        for subregion in subregions.values()
+        subregion["name"]: subregion["url"] for subregion in subregions.values()
     }
     return subregions
 
@@ -85,20 +84,14 @@ def get_test_ip(is_change_ip=False):
 def get_resort(resort_soup):
     resort = {}
     name = " ".join(
-        resort_soup.find("a", class_="h3")
-        .text.replace("/\u200b", "/")
-        .split()[1:]
+        resort_soup.find("a", class_="h3").text.replace("/\u200b", "/").split()[1:]
     )
-    print("")
-    print("******************************************************")
-    print(name)
     url = resort_soup.find("a", class_="h3").get("href")
     if len(resort_soup.find_all("td")) < 8:
         return False
 
     height_difference, bottom_point, top_point = [
-        height.text[:-2]
-        for height in resort_soup.find_all("td")[2].find_all("span")
+        height.text[:-2] for height in resort_soup.find_all("td")[2].find_all("span")
     ]
     all_slopes_length = resort_soup.find("span", class_="slopeinfoitem active")
     if all_slopes_length is not None:
@@ -118,9 +111,7 @@ def get_resort(resort_soup):
     else:
         red_slopes_length = 0
 
-    black_slopes_length = resort_soup.find(
-        "span", class_="slopeinfoitem black"
-    )
+    black_slopes_length = resort_soup.find("span", class_="slopeinfoitem black")
     if black_slopes_length is not None:
         black_slopes_length = black_slopes_length.text[:-3]
     else:
@@ -144,6 +135,4 @@ def get_resort(resort_soup):
         "black_slopes_length": black_slopes_length,
         "amount_lifts": amount_lifts,
     }
-    print("******************************************************")
-    print("")
     return resort

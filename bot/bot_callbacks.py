@@ -165,7 +165,6 @@ def search(update, context):
 
     else:  # parameter == "now"
         if apply_button:
-            print(apply_data)
             filter = apply_data + "&" + values
 
         else:
@@ -192,7 +191,6 @@ def search_res(height_difference=None, top_point=None, length_all_slopes=None):
 
 def print_callback(update, context):
     query = update.callback_query
-    print(query)
     params = {}
     for param in query.data.split(":")[1].split("&"):
         param_type, uuid = param.split("=")
@@ -200,7 +198,6 @@ def print_callback(update, context):
             params[param_type].append(uuid)
         else:
             params[param_type] = [uuid]
-    print(params)
 
     queryset = Resort.objects.all()
     filters = query.data.split(":")[1].split("&")
