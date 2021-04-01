@@ -6,10 +6,9 @@ from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from telegram import Update
 
+from bot.handlers import BOT, DISPATCHER
+from bot.parsers import get_regions, get_resort, get_resorts_soup
 from ski.models import Continent, Country, Resort, Slope
-
-from .handlers import BOT, DISPATCHER
-from .parsers import get_regions, get_resort, get_resorts_soup
 
 
 def test(request):

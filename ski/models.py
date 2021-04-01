@@ -1,9 +1,7 @@
-import uuid
 from uuid import uuid4
 
 from django.db import models
 from django.db.models import F
-from django.db.models.fields import UUIDField
 
 
 def short_uuid():
@@ -12,9 +10,7 @@ def short_uuid():
 
 
 class Continent(models.Model):
-    name = models.CharField(
-        max_length=50, unique=True, verbose_name="Часть света"
-    )
+    name = models.CharField(max_length=50, unique=True, verbose_name="Часть света")
     uuid = models.CharField(
         default=short_uuid,
         editable=False,
@@ -22,9 +18,7 @@ class Continent(models.Model):
         max_length=16,
         verbose_name="Уникальное имя (16 бит)",
     )
-    url = models.SlugField(
-        unique=True, max_length=250, verbose_name="Continent url"
-    )
+    url = models.SlugField(unique=True, max_length=250, verbose_name="Continent url")
 
     class Meta:
         ordering = ["name"]
@@ -104,9 +98,7 @@ class Resort(models.Model):
     top_point = models.PositiveSmallIntegerField(
         blank=True, null=True, verbose_name="Верхняя точка"
     )
-    url = models.SlugField(
-        unique=True, max_length=250, verbose_name="Resort url"
-    )
+    url = models.SlugField(unique=True, max_length=250, verbose_name="Resort url")
 
     class Meta:
         ordering = [

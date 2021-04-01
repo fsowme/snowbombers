@@ -1,12 +1,10 @@
 from typing import List
 
-from django.core import paginator
 from django.core.paginator import Paginator
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
+from bot.models import User as django_user
 from ski.models import Resort
-
-from .models import User as django_user
 
 
 class MyKeyboardMarkup(InlineKeyboardMarkup):

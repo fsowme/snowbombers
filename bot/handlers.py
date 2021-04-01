@@ -10,7 +10,7 @@ from telegram.ext import (
     MessageHandler,
 )
 
-from .bot_callbacks import (
+from bot.bot_callbacks import (
     available_commands,
     bookmarks,
     cancel,

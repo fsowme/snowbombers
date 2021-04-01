@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import AirportDistance, Continent, Country, Lift, Resort, Slope
+from ski.models import AirportDistance, Continent, Country, Lift, Resort, Slope
 
 admin.site.register(AirportDistance)
 admin.site.register(Continent)

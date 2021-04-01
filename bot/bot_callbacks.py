@@ -1,16 +1,14 @@
 from django.db.models.expressions import F
-from django.db.models.query import QuerySet
 from telegram.inline.inlinekeyboardbutton import InlineKeyboardButton
 
-from bot.models import User as User
-from ski.models import Continent, Country, Resort
-
-from .keyboards import (
+from bot.keyboards import (
     MyKeyboardMarkup,
     button_add_bookmarks,
     get_resort_info,
     markup_start_search,
 )
+from bot.models import User as User
+from ski.models import Continent, Country, Resort
 
 
 def available_commands(update, context):
